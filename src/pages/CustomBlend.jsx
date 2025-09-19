@@ -798,19 +798,19 @@ const CustomBlend = () => {
                       Quantité
                     </label>
                     <div className="flex items-center justify-center">
-                      <div className="flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg p-1">
+                      <div className="flex items-center bg-gradient-to-r from-gray-100 to-gray-200 backdrop-blur-sm border border-gray-300/40 rounded-2xl shadow-lg p-1">
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           onClick={() => setBlendQuantity(Math.max(1, blendQuantity - 1))}
                           disabled={blendQuantity <= 1}
-                          className="h-12 w-12 p-0 rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm hover:bg-white/80 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="h-12 w-12 p-0 rounded-xl bg-gray-200/80 backdrop-blur-sm border border-gray-300/60 shadow-sm hover:bg-gray-300/90 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Minus className="h-5 w-5 text-gray-600" />
+                          <Minus className="h-5 w-5 text-gray-700" />
                         </Button>
-                        <div className="px-6 py-3 mx-2 bg-white/80 backdrop-blur-sm rounded-xl border border-white/40 shadow-inner">
-                          <span className="text-xl font-semibold text-gray-800 min-w-[2rem] text-center block">
+                        <div className="px-6 py-3 mx-2 bg-gray-300/90 backdrop-blur-sm rounded-xl border border-gray-400/60 shadow-inner">
+                          <span className="text-xl font-semibold text-gray-900 min-w-[2rem] text-center block">
                             {blendQuantity}
                           </span>
                         </div>
@@ -819,9 +819,9 @@ const CustomBlend = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => setBlendQuantity(blendQuantity + 1)}
-                          className="h-12 w-12 p-0 rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm hover:bg-white/80 hover:shadow-md transition-all duration-300"
+                          className="h-12 w-12 p-0 rounded-xl bg-gray-200/80 backdrop-blur-sm border border-gray-300/60 shadow-sm hover:bg-gray-300/90 hover:shadow-md transition-all duration-300"
                         >
-                          <Plus className="h-5 w-5 text-gray-600" />
+                          <Plus className="h-5 w-5 text-gray-700" />
                         </Button>
                       </div>
                     </div>

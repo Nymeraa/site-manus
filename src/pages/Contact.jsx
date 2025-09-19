@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react'
+import { Mail, MapPin, Send, MessageCircle, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +16,8 @@ const Contact = () => {
     message: ''
   })
 
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+
   const handleSubmit = (e) => {
     e.preventDefault()
     // Ici, vous pourriez envoyer les données à votre backend
@@ -23,6 +25,13 @@ const Contact = () => {
     // Reset form
     setFormData({ name: '', email: '', subject: '', message: '' })
     alert('Votre message a été envoyé avec succès !')
+  }
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault()
+    console.log('Newsletter subscription:', newsletterEmail)
+    setNewsletterEmail('')
+    alert('Inscription à la newsletter réussie !')
   }
 
   const handleChange = (field, value) => {
@@ -37,22 +46,37 @@ const Contact = () => {
       description: "Réponse sous 24h"
     },
     {
-      icon: Phone,
-      title: "Téléphone",
-      content: "01 23 45 67 89",
-      description: "Lun-Ven 9h-18h"
-    },
-    {
       icon: MapPin,
-      title: "Adresse",
+      title: "Siège social",
       content: "123 Rue du Thé, 75001 Paris",
-      description: "Showroom sur RDV"
+      description: "France"
+    }
+  ]
+
+  const socialLinks = [
+    {
+      icon: Facebook,
+      name: "Facebook",
+      url: "https://facebook.com/teablend",
+      color: "text-blue-600 hover:text-blue-700"
     },
     {
-      icon: Clock,
-      title: "Horaires",
-      content: "Lun-Ven: 9h-18h",
-      description: "Sam: 10h-16h"
+      icon: Instagram,
+      name: "Instagram",
+      url: "https://instagram.com/teablend",
+      color: "text-pink-600 hover:text-pink-700"
+    },
+    {
+      icon: Twitter,
+      name: "Twitter",
+      url: "https://twitter.com/teablend",
+      color: "text-blue-400 hover:text-blue-500"
+    },
+    {
+      icon: Youtube,
+      name: "YouTube",
+      url: "https://youtube.com/teablend",
+      color: "text-red-600 hover:text-red-700"
     }
   ]
 
@@ -222,43 +246,73 @@ const Contact = () => {
               </CardContent>
             </Card>
 
-            {/* Carte ou informations supplémentaires */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Visitez notre Showroom</CardTitle>
-                <CardDescription>
-                  Découvrez nos thés dans notre espace de dégustation parisien
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-center">
-                    <MapPin className="h-12 w-12 text-primary mx-auto mb-2" />
-                    <p className="text-lg font-semibold">123 Rue du Thé, 75001 Paris</p>
-                    <p className="text-muted-foreground">Métro: Châtelet-Les Halles</p>
+            {/* Réseaux Sociaux et Newsletter */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              {/* Réseaux Sociaux */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Réseaux Sociaux</CardTitle>
+                  <CardDescription>
+                    Suivez-nous pour les dernières actualités
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {socialLinks.map((social, index) => {
+                      const Icon = social.icon
+                      return (
+                        <a
+                          key={index}
+                          href={social.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors ${social.color}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span className="font-medium text-sm">{social.name}</span>
+                        </a>
+                      )
+                    })}
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h4 className="font-semibold mb-2">Horaires d'ouverture</h4>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>Lundi - Vendredi: 9h - 18h</li>
-                      <li>Samedi: 10h - 16h</li>
-                      <li>Dimanche: Fermé</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Services disponibles</h4>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Dégustation gratuite</li>
-                      <li>• Conseil personnalisé</li>
-                      <li>• Création de mélanges</li>
-                      <li>• Ateliers thé (sur RDV)</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* Newsletter */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Inscription Newsletter</CardTitle>
+                  <CardDescription>
+                    Recevez nos offres et conseils thé
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="newsletter-email">Votre email</Label>
+                      <Input
+                        id="newsletter-email"
+                        type="email"
+                        value={newsletterEmail}
+                        onChange={(e) => setNewsletterEmail(e.target.value)}
+                        placeholder="votre@email.com"
+                        required
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={!newsletterEmail}
+                    >
+                      S'inscrire
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      En vous inscrivant, vous acceptez de recevoir nos communications. 
+                      Vous pouvez vous désabonner à tout moment.
+                    </p>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
