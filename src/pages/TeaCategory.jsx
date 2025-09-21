@@ -110,12 +110,13 @@ const TeaCategory = () => {
   // Mapping des catégories URL vers les noms de catégories dans les données
   const categoryMapping = {
     'the-noir': 'Thé Noir',
-    'the-vert': 'Thé Vert',
+    'the-vert': 'Thé Vert', 
     'the-blanc': 'Thé Blanc',
     'the-oolong': 'Thé Oolong',
     'rooibos': 'Rooibos',
-    'infusions': 'Infusions',
-    'the-matcha': 'Matcha'
+    'infusions': 'Tisanes', // Mapping vers "Tisanes" dans les données
+    'the-matcha': 'Matcha',
+    'nos-packs': 'Nos Packs'
   };
 
   const categoryName = categoryMapping[category] || 'Thés et Infusions';
@@ -128,15 +129,16 @@ const TeaCategory = () => {
     'the-oolong': 'Appréciez nos thés Oolong semi-fermentés, offrant un équilibre parfait entre fraîcheur et complexité.',
     'rooibos': 'Dégustez nos rooibos sans théine, naturellement sucrés et parfaits à tout moment de la journée.',
     'infusions': 'Découvrez nos infusions de plantes et de fruits, naturellement sans théine et aux bienfaits variés.',
-    'the-matcha': 'Explorez notre gamme de matcha premium, poudre de thé vert japonais aux propriétés énergisantes.'
+    'the-matcha': 'Explorez notre gamme de matcha premium, poudre de thé vert japonais aux propriétés énergisantes.',
+    'nos-packs': 'Découvrez nos coffrets et assortiments soigneusement composés pour tous les goûts.'
   };
 
   useEffect(() => {
     // Filtrer les produits par catégorie
-    let filtered = products.filter(product => 
-      product.category === categoryName || 
-      (categoryName === 'Infusions' && product.category === 'Tisanes')
-    );
+    let filtered = products.filter(product => {
+      const mappedCategory = categoryMapping[category];
+      return product.category === mappedCategory;
+    });
 
     // Filtrer par prix si nécessaire
     if (priceRange !== 'all') {
@@ -172,7 +174,7 @@ const TeaCategory = () => {
             Accueil
           </Link>
           <ChevronRight className="h-4 w-4" />
-          <Link to="/catalog" className="hover:text-primary">
+          <Link to="/thes-et-infusions" className="hover:text-primary">
             Nos thés & Infusions
           </Link>
           <ChevronRight className="h-4 w-4" />
@@ -248,7 +250,7 @@ const TeaCategory = () => {
               Essayez de modifier vos filtres ou explorez d'autres catégories.
             </p>
             <Button asChild>
-              <Link to="/catalog">
+              <Link to="/thes-et-infusions">
                 Voir tous les produits
               </Link>
             </Button>

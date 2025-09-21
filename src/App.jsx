@@ -33,6 +33,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/catalog" element={<Catalog />} />
+                <Route path="/thes-et-infusions" element={<Catalog />} />
+                <Route path="/thes-et-infusions/:category" element={<TeaCategory />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/custom-blend" element={<CustomBlend />} />
                 <Route path="/cart" element={<Cart />} />
@@ -40,11 +42,9 @@ function App() {
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/accessories" element={<Accessories />} />
                 <Route path="/account" element={<Account />} />
-                <Route path="/thes-et-infusions/:category" element={<TeaCategory />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
-
               </Routes>
             </main>
             <Footer />

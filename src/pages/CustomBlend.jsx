@@ -405,33 +405,30 @@ const CustomBlend = () => {
                     />
                   </div>
 
-                  {/* Filter Buttons */}
-                  <div className="flex flex-wrap gap-2">
-                    {filterOptions.map((filter) => (
-                      <Button
-                        key={filter.value}
-                        variant={activeFilters.includes(filter.value) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => toggleFilter(filter.value)}
-                        className={`text-xs ${
-                          activeFilters.includes(filter.value)
-                            ? 'bg-green-600 hover:bg-green-700'
-                            : 'hover:bg-green-50 hover:border-green-300'
-                        }`}
-                      >
-                        {filter.label}
-                      </Button>
-                    ))}
-                    {activeFilters.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setActiveFilters([])}
-                        className="text-xs text-gray-500 hover:text-gray-700"
-                      >
-                        Effacer filtres
-                      </Button>
-                    )}
+                  {/* Filter Dropdown */}
+                  <div className="flex gap-4">
+                    <Select 
+                      value={activeFilters.length > 0 ? activeFilters[0] : "tous"} 
+                      onValueChange={(value) => {
+                        if (value === "tous") {
+                          setActiveFilters([]);
+                        } else {
+                          setActiveFilters([value]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Tous" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tous">Tous</SelectItem>
+                        {filterOptions.map((filter) => (
+                          <SelectItem key={filter.value} value={filter.value}>
+                            {filter.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 

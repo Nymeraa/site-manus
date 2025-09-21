@@ -16,13 +16,14 @@ const Header = () => {
 
   const navigation = [
     { name: 'Accueil', href: '/' },
-    { name: 'Thés et Infusions', href: '/catalog', isDropdown: true, subCategories: [
+    { name: 'Thés et Infusions', href: '/thes-et-infusions', isDropdown: true, subCategories: [
+      { name: 'Voir tout', href: '/thes-et-infusions' },
       { name: 'Thé Noir', href: '/thes-et-infusions/the-noir' },
       { name: 'Thé Vert', href: '/thes-et-infusions/the-vert' },
       { name: 'Thé Blanc', href: '/thes-et-infusions/the-blanc' },
       { name: 'Rooibos', href: '/thes-et-infusions/rooibos' },
       { name: 'Infusion', href: '/thes-et-infusions/infusions' },
-      { name: 'Nos Packs', href: '/catalog?category=Nos Packs' }
+      { name: 'Nos Packs', href: '/thes-et-infusions/nos-packs' }
     ] },
     { name: 'Créer ton mélange !', href: '/custom-blend' },
     { name: 'Accessoires', href: '/accessories' },
