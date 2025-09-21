@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,11 +17,11 @@ const Header = () => {
   const navigation = [
     { name: 'Accueil', href: '/' },
     { name: 'Thés et Infusions', href: '/catalog', isDropdown: true, subCategories: [
-      { name: 'Thé Noir', href: '/catalog?category=Thé Noir' },
-      { name: 'Thé Vert', href: '/catalog?category=Thé Vert' },
-      { name: 'Thé Blanc', href: '/catalog?category=Thé Blanc' },
-      { name: 'Rooibos', href: '/catalog?category=Rooibos' },
-      { name: 'Infusion', href: '/catalog?category=Infusion' },
+      { name: 'Thé Noir', href: '/thes-et-infusions/the-noir' },
+      { name: 'Thé Vert', href: '/thes-et-infusions/the-vert' },
+      { name: 'Thé Blanc', href: '/thes-et-infusions/the-blanc' },
+      { name: 'Rooibos', href: '/thes-et-infusions/rooibos' },
+      { name: 'Infusion', href: '/thes-et-infusions/infusions' },
       { name: 'Nos Packs', href: '/catalog?category=Nos Packs' }
     ] },
     { name: 'Créer ton mélange !', href: '/custom-blend' },

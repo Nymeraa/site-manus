@@ -15,6 +15,7 @@ import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Accessories from './pages/Accessories'
 import Account from './pages/Account'
+import TeaCategory from './pages/TeaCategory'
 import FAQ from './pages/FAQ'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/accessories" element={<Accessories />} />
                 <Route path="/account" element={<Account />} />
+                <Route path="/thes-et-infusions/:category" element={<TeaCategory />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
