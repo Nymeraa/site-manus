@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lightbulb, X, Scale, Plus, Minus, AlertCircle, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -393,20 +394,20 @@ const CustomBlend = () => {
               <CardContent className="p-8">
                 {/* Search and Filters */}
                 <div className="mb-8 space-y-4">
-                  {/* Search Bar */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      type="text"
-                      placeholder="Rechercher un ingrédient..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-
-                  {/* Filter Dropdown */}
+                  {/* Search Bar and Filter */}
                   <div className="flex gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        type="text"
+                        placeholder="Rechercher un ingrédient..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    
+                    {/* Filter Dropdown */}
                     <Select 
                       value={activeFilters.length > 0 ? activeFilters[0] : "tous"} 
                       onValueChange={(value) => {
@@ -417,7 +418,7 @@ const CustomBlend = () => {
                         }
                       }}
                     >
-                      <SelectTrigger className="w-[200px]">
+                      <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Tous" />
                       </SelectTrigger>
                       <SelectContent>
@@ -432,8 +433,15 @@ const CustomBlend = () => {
                   </div>
                 </div>
 
-                <Tabs defaultValue="bases" className="w-full">
-                  <TabsList className="grid w-full grid-cols-6 mb-8">
+                <Tabs defaultValue={searchTerm ? "recherche" : "bases"} className="w-full">
+                  <TabsList className="grid w-full grid-cols-7 mb-8">
+                    {searchTerm && (
+                      <TabsTrigger value="recherche">Résultats ({
+                        Object.values(customBlendIngredients).flat().filter(ingredient => 
+                          filterIngredients([ingredient]).length > 0
+                        ).length
+                      })</TabsTrigger>
+                    )}
                     <TabsTrigger value="bases">Bases</TabsTrigger>
                     <TabsTrigger value="fruits">Fruits</TabsTrigger>
                     <TabsTrigger value="herbes">Herbes & Plantes</TabsTrigger>
@@ -441,6 +449,237 @@ const CustomBlend = () => {
                     <TabsTrigger value="epices">Épices</TabsTrigger>
                     <TabsTrigger value="tous">Tous les ingrédients</TabsTrigger>
                   </TabsList>
+
+                  {/* Onglet de recherche globale */}
+                  {searchTerm && (
+                    <TabsContent value="recherche">
+                      <div className="space-y-8">
+                        {/* Bases trouvées */}
+                        {(() => {
+                          const basesFound = filterIngredients(customBlendIngredients.bases);
+                          if (basesFound.length > 0) {
+                            return (
+                              <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Bases</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                  {basesFound.map((ingredient) => {
+                                    const isSelected = isIngredientSelected(ingredient, true);
+                                    const ingredientPrice = ingredient.price[selectedQuantity];
+                                    const counts = getIngredientCount();
+                                    let canSelect = isSelected;
+                                    
+                                    if (!isSelected) {
+                                      if (ingredient.name === "Infusion") {
+                                        canSelect = !selectedBases.some(base => base.name !== "Matcha");
+                                      } else {
+                                        canSelect = ingredient.name === "Matcha" || counts.bases === 0;
+                                      }
+                                    }
+                                    
+                                    return (
+                                      <Card 
+                                        key={ingredient.id} 
+                                        className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
+                                          isSelected 
+                                            ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
+                                            : canSelect 
+                                              ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
+                                              : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
+                                        }`}
+                                        onClick={() => canSelect && toggleIngredient(ingredient, true)}
+                                      >
+                                        <div className="aspect-square overflow-hidden bg-gray-100">
+                                          <img
+                                            src={ingredient.image}
+                                            alt={ingredient.name}
+                                            className={`w-full h-full object-cover transition-all duration-300 ${
+                                              isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
+                                            }`}
+                                          />
+                                        </div>
+                                        
+                                        <CardContent className="p-4">
+                                          <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                            {ingredient.name}
+                                          </CardTitle>
+                                          
+                                          <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                            {ingredient.description}
+                                          </p>
+
+                                          {/* Benefits */}
+                                          {ingredient.benefits && ingredient.benefits.length > 0 && (
+                                            <div className="mb-3">
+                                              <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                              <div className="flex flex-wrap gap-1">
+                                                {ingredient.benefits.map((benefit, index) => (
+                                                  <span 
+                                                    key={index}
+                                                    className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                  >
+                                                    {benefit}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Warnings */}
+                                          {ingredient.warnings && ingredient.warnings.length > 0 && (
+                                            <div className="mb-3">
+                                              <div className="flex flex-wrap gap-1">
+                                                {ingredient.warnings.map((warning, index) => (
+                                                  <span 
+                                                    key={index}
+                                                    className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                  >
+                                                    {warning}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          <div className="flex items-center justify-between">
+                                            {ingredientPrice > 0 ? (
+                                              <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                                +{ingredientPrice.toFixed(2)}€
+                                              </span>
+                                            ) : (
+                                              <span></span>
+                                            )}
+                                            {isSelected && (
+                                              <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
+                                                Sélectionné
+                                              </div>
+                                            )}
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+
+                        {/* Autres ingrédients trouvés */}
+                        {Object.entries(customBlendIngredients).map(([categoryKey, ingredients]) => {
+                          if (categoryKey === 'bases') return null;
+                          const categoryNames = {
+                            'fruits': 'Fruits',
+                            'herbes': 'Herbes & Plantes',
+                            'fleurs': 'Fleurs',
+                            'epices': 'Épices'
+                          };
+                          
+                          const filteredIngredients = filterIngredients(ingredients);
+                          if (filteredIngredients.length === 0) return null;
+                          
+                          return (
+                            <div key={categoryKey}>
+                              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                {categoryNames[categoryKey]}
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredIngredients.map((ingredient) => {
+                                  const isSelected = isIngredientSelected(ingredient, false);
+                                  const ingredientPrice = ingredient.price[selectedQuantity];
+                                  const counts = getIngredientCount();
+                                  const maxIngredients = getMaxIngredients();
+                                  const canSelect = isSelected || (counts.ingredients < maxIngredients && counts.total < 5);
+                                  
+                                  return (
+                                    <Card 
+                                      key={ingredient.id} 
+                                      className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
+                                        isSelected 
+                                          ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
+                                          : canSelect 
+                                            ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
+                                            : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
+                                      }`}
+                                      onClick={() => canSelect && toggleIngredient(ingredient, false)}
+                                    >
+                                      <div className="aspect-square overflow-hidden bg-gray-100">
+                                        <img
+                                          src={ingredient.image}
+                                          alt={ingredient.name}
+                                          className={`w-full h-full object-cover transition-all duration-300 ${
+                                            isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
+                                          }`}
+                                        />
+                                      </div>
+                                      
+                                      <CardContent className="p-4">
+                                        <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                          {ingredient.name}
+                                        </CardTitle>
+                                        
+                                        <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                          {ingredient.description}
+                                        </p>
+
+                                        {/* Benefits */}
+                                        {ingredient.benefits && ingredient.benefits.length > 0 && (
+                                          <div className="mb-3">
+                                            <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                            <div className="flex flex-wrap gap-1">
+                                              {ingredient.benefits.map((benefit, index) => (
+                                                <span 
+                                                  key={index}
+                                                  className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                >
+                                                  {benefit}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* Warnings */}
+                                        {ingredient.warnings && ingredient.warnings.length > 0 && (
+                                          <div className="mb-3">
+                                            <div className="flex flex-wrap gap-1">
+                                              {ingredient.warnings.map((warning, index) => (
+                                                <span 
+                                                  key={index}
+                                                  className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                >
+                                                  {warning}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                        
+                                        <div className="flex items-center justify-between">
+                                          {ingredientPrice > 0 ? (
+                                            <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                              +{ingredientPrice.toFixed(2)}€
+                                            </span>
+                                          ) : (
+                                            <span></span>
+                                          )}
+                                          {isSelected && (
+                                            <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
+                                              Sélectionné
+                                            </div>
+                                          )}
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </TabsContent>
+                  )}
 
                   {renderIngredientSection("Bases", customBlendIngredients.bases, "bases", true)}
                   {renderIngredientSection("Fruits", customBlendIngredients.fruits, "fruits")}
