@@ -5,7 +5,6 @@ import { ChevronRight, Filter, Star, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '../context/CartContext';
 
 // Composant ProductCard inline
@@ -137,6 +136,7 @@ const TeaCategory = () => {
     // Filtrer les produits par catégorie
     let filtered = products.filter(product => {
       const mappedCategory = categoryMapping[category];
+      console.log('Category:', category, 'Mapped:', mappedCategory, 'Product category:', product.category);
       return product.category === mappedCategory;
     });
 
@@ -202,30 +202,28 @@ const TeaCategory = () => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Price Filter */}
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrer par prix" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les prix</SelectItem>
-                <SelectItem value="0-15">Moins de 15€</SelectItem>
-                <SelectItem value="15-25">15€ - 25€</SelectItem>
-                <SelectItem value="25-35">25€ - 35€</SelectItem>
-                <SelectItem value="35-999">Plus de 35€</SelectItem>
-              </SelectContent>
-            </Select>
+            <select 
+              value={priceRange} 
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="all">Tous les prix</option>
+              <option value="0-15">Moins de 15€</option>
+              <option value="15-25">15€ - 25€</option>
+              <option value="25-35">25€ - 35€</option>
+              <option value="35-999">Plus de 35€</option>
+            </select>
 
             {/* Sort */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Nom A-Z</SelectItem>
-                <SelectItem value="price-asc">Prix croissant</SelectItem>
-                <SelectItem value="price-desc">Prix décroissant</SelectItem>
-              </SelectContent>
-            </Select>
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="name">Nom A-Z</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+            </select>
           </div>
         </div>
 

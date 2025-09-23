@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lightbulb, X, Scale, Plus, Minus, AlertCircle, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -408,40 +407,29 @@ const CustomBlend = () => {
                     </div>
                     
                     {/* Filter Dropdown */}
-                    <Select 
+                    <select 
                       value={activeFilters.length > 0 ? activeFilters[0] : "tous"} 
-                      onValueChange={(value) => {
-                        if (value === "tous") {
+                      onChange={(e) => {
+                        if (e.target.value === "tous") {
                           setActiveFilters([]);
                         } else {
-                          setActiveFilters([value]);
+                          setActiveFilters([e.target.value]);
                         }
                       }}
+                      className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Tous" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="tous">Tous</SelectItem>
-                        {filterOptions.map((filter) => (
-                          <SelectItem key={filter.value} value={filter.value}>
-                            {filter.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <option value="tous">Tous</option>
+                      {filterOptions.map((filter) => (
+                        <option key={filter.value} value={filter.value}>
+                          {filter.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
-                <Tabs defaultValue={searchTerm ? "recherche" : "bases"} className="w-full">
-                  <TabsList className="grid w-full grid-cols-7 mb-8">
-                    {searchTerm && (
-                      <TabsTrigger value="recherche">Résultats ({
-                        Object.values(customBlendIngredients).flat().filter(ingredient => 
-                          filterIngredients([ingredient]).length > 0
-                        ).length
-                      })</TabsTrigger>
-                    )}
+                <Tabs defaultValue="bases" className="w-full">
+                  <TabsList className="grid w-full grid-cols-6 mb-8">
                     <TabsTrigger value="bases">Bases</TabsTrigger>
                     <TabsTrigger value="fruits">Fruits</TabsTrigger>
                     <TabsTrigger value="herbes">Herbes & Plantes</TabsTrigger>
@@ -450,9 +438,16 @@ const CustomBlend = () => {
                     <TabsTrigger value="tous">Tous les ingrédients</TabsTrigger>
                   </TabsList>
 
-                  {/* Onglet de recherche globale */}
+                  {/* Résultats de recherche affichés en-dessous des onglets */}
                   {searchTerm && (
-                    <TabsContent value="recherche">
+                    <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                      <h3 className="text-lg font-semibold text-blue-900 mb-4">
+                        Résultats de recherche pour "{searchTerm}" ({
+                          Object.values(customBlendIngredients).flat().filter(ingredient => 
+                            filterIngredients([ingredient]).length > 0
+                          ).length
+                        } résultats)
+                      </h3>
                       <div className="space-y-8">
                         {/* Bases trouvées */}
                         {(() => {
@@ -460,8 +455,8 @@ const CustomBlend = () => {
                           if (basesFound.length > 0) {
                             return (
                               <div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Bases</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <h4 className="text-md font-medium text-gray-900 mb-3">Bases ({basesFound.length})</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                   {basesFound.map((ingredient) => {
                                     const isSelected = isIngredientSelected(ingredient, true);
                                     const ingredientPrice = ingredient.price[selectedQuantity];
@@ -498,59 +493,64 @@ const CustomBlend = () => {
                                           />
                                         </div>
                                         
-                                        <CardContent className="p-4">
-                                          <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                        <CardContent className="p-3">
+                                          <CardTitle className={`text-sm mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                             {ingredient.name}
                                           </CardTitle>
                                           
-                                          <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                          <p className={`text-xs mb-2 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                             {ingredient.description}
                                           </p>
 
                                           {/* Benefits */}
                                           {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                            <div className="mb-3">
-                                              <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                            <div className="mb-2">
                                               <div className="flex flex-wrap gap-1">
-                                                {ingredient.benefits.map((benefit, index) => (
+                                                {ingredient.benefits.slice(0, 2).map((benefit, index) => (
                                                   <span 
                                                     key={index}
-                                                    className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                    className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded-full text-xs"
                                                   >
                                                     {benefit}
                                                   </span>
                                                 ))}
+                                                {ingredient.benefits.length > 2 && (
+                                                  <span className="text-xs text-gray-500">+{ingredient.benefits.length - 2}</span>
+                                                )}
                                               </div>
                                             </div>
                                           )}
 
                                           {/* Warnings */}
                                           {ingredient.warnings && ingredient.warnings.length > 0 && (
-                                            <div className="mb-3">
+                                            <div className="mb-2">
                                               <div className="flex flex-wrap gap-1">
-                                                {ingredient.warnings.map((warning, index) => (
+                                                {ingredient.warnings.slice(0, 1).map((warning, index) => (
                                                   <span 
                                                     key={index}
-                                                    className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                    className="text-xs bg-amber-100 text-amber-700 px-1 py-0.5 rounded-full text-xs"
                                                   >
                                                     {warning}
                                                   </span>
                                                 ))}
+                                                {ingredient.warnings.length > 1 && (
+                                                  <span className="text-xs text-gray-500">+{ingredient.warnings.length - 1}</span>
+                                                )}
                                               </div>
                                             </div>
                                           )}
                                           
                                           <div className="flex items-center justify-between">
                                             {ingredientPrice > 0 ? (
-                                              <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                              <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
                                                 +{ingredientPrice.toFixed(2)}€
                                               </span>
                                             ) : (
                                               <span></span>
                                             )}
                                             {isSelected && (
-                                              <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
-                                                Sélectionné
+                                              <div className="text-green-700 text-xs font-medium bg-green-100 px-1 py-0.5 rounded-full">
+                                                ✓
                                               </div>
                                             )}
                                           </div>
@@ -580,10 +580,10 @@ const CustomBlend = () => {
                           
                           return (
                             <div key={categoryKey}>
-                              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                                {categoryNames[categoryKey]}
-                              </h3>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                              <h4 className="text-md font-medium text-gray-900 mb-3">
+                                {categoryNames[categoryKey]} ({filteredIngredients.length})
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {filteredIngredients.map((ingredient) => {
                                   const isSelected = isIngredientSelected(ingredient, false);
                                   const ingredientPrice = ingredient.price[selectedQuantity];
@@ -613,59 +613,64 @@ const CustomBlend = () => {
                                         />
                                       </div>
                                       
-                                      <CardContent className="p-4">
-                                        <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                      <CardContent className="p-3">
+                                        <CardTitle className={`text-sm mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                           {ingredient.name}
                                         </CardTitle>
                                         
-                                        <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                        <p className={`text-xs mb-2 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                           {ingredient.description}
                                         </p>
 
                                         {/* Benefits */}
                                         {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                          <div className="mb-3">
-                                            <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                          <div className="mb-2">
                                             <div className="flex flex-wrap gap-1">
-                                              {ingredient.benefits.map((benefit, index) => (
+                                              {ingredient.benefits.slice(0, 2).map((benefit, index) => (
                                                 <span 
                                                   key={index}
-                                                  className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                  className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded-full text-xs"
                                                 >
                                                   {benefit}
                                                 </span>
                                               ))}
+                                              {ingredient.benefits.length > 2 && (
+                                                <span className="text-xs text-gray-500">+{ingredient.benefits.length - 2}</span>
+                                              )}
                                             </div>
                                           </div>
                                         )}
 
                                         {/* Warnings */}
                                         {ingredient.warnings && ingredient.warnings.length > 0 && (
-                                          <div className="mb-3">
+                                          <div className="mb-2">
                                             <div className="flex flex-wrap gap-1">
-                                              {ingredient.warnings.map((warning, index) => (
+                                              {ingredient.warnings.slice(0, 1).map((warning, index) => (
                                                 <span 
                                                   key={index}
-                                                  className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                  className="text-xs bg-amber-100 text-amber-700 px-1 py-0.5 rounded-full text-xs"
                                                 >
                                                   {warning}
                                                 </span>
                                               ))}
+                                              {ingredient.warnings.length > 1 && (
+                                                <span className="text-xs text-gray-500">+{ingredient.warnings.length - 1}</span>
+                                              )}
                                             </div>
                                           </div>
                                         )}
                                         
                                         <div className="flex items-center justify-between">
                                           {ingredientPrice > 0 ? (
-                                            <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                            <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
                                               +{ingredientPrice.toFixed(2)}€
                                             </span>
                                           ) : (
                                             <span></span>
                                           )}
                                           {isSelected && (
-                                            <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
-                                              Sélectionné
+                                            <div className="text-green-700 text-xs font-medium bg-green-100 px-1 py-0.5 rounded-full">
+                                              ✓
                                             </div>
                                           )}
                                         </div>
@@ -678,7 +683,7 @@ const CustomBlend = () => {
                           );
                         })}
                       </div>
-                    </TabsContent>
+                    </div>
                   )}
 
                   {renderIngredientSection("Bases", customBlendIngredients.bases, "bases", true)}
