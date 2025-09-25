@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -107,7 +107,7 @@ const Accessories = () => {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
-              {accessoryCategories.map(category => (
+              {accessoryCategories && accessoryCategories.map(category => (
                 <option key={category} value={category}>
                   {category}
                 </option>
@@ -142,7 +142,7 @@ const Accessories = () => {
 
         {/* Grille des accessoires */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredAndSortedAccessories.map((accessory) => (
+          {filteredAndSortedAccessories && filteredAndSortedAccessories.map((accessory) => (
             <Card key={accessory.id} className="group hover:shadow-lg transition-shadow">
               <div className="relative overflow-hidden rounded-t-lg">
                 <img

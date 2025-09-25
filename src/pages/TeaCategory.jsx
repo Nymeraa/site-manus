@@ -13,12 +13,14 @@ const ProductCard = ({ product }) => {
   const { addItem } = useCart();
 
   const handleAddToCart = () => {
-    const productWithGrammage = {
-      ...product,
-      selectedGrammage: product.grammages[selectedGrammage],
-      price: product.prices[selectedGrammage]
-    };
-    addItem(productWithGrammage);
+    if (product.grammages && product.grammages[selectedGrammage]) {
+      const productWithGrammage = {
+        ...product,
+        selectedGrammage: product.grammages[selectedGrammage],
+        price: product.grammages[selectedGrammage].price
+      };
+      addItem(productWithGrammage);
+    }
   };
 
   return (
@@ -72,9 +74,9 @@ const ProductCard = ({ product }) => {
               onChange={(e) => setSelectedGrammage(parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
-              {product.grammages.map((grammage, index) => (
+              {product.grammages && product.grammages.map((grammage, index) => (
                 <option key={index} value={index.toString()}>
-                  {grammage} - {product.prices[index].toFixed(2)}€
+                  {grammage.quantity}{grammage.unit} - {grammage.price.toFixed(2)}€
                 </option>
               ))}
             </select>
@@ -82,7 +84,7 @@ const ProductCard = ({ product }) => {
 
           <div className="flex items-center justify-between">
             <div className="text-2xl font-bold text-primary">
-              {product.prices[selectedGrammage].toFixed(2)}€
+              {product.grammages && product.grammages[selectedGrammage] ? product.grammages[selectedGrammage].price.toFixed(2) : '0.00'}€
             </div>
             <Button
               onClick={handleAddToCart}
