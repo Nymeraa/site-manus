@@ -67,18 +67,17 @@ const ProductCard = ({ product }) => {
             <label className="text-sm font-medium text-gray-700 mb-1 block">
               Grammage
             </label>
-            <Select value={selectedGrammage.toString()} onValueChange={(value) => setSelectedGrammage(parseInt(value))}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {product.grammages.map((grammage, index) => (
-                  <SelectItem key={index} value={index.toString()}>
-                    {grammage} - {product.prices[index].toFixed(2)}€
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select 
+              value={selectedGrammage.toString()} 
+              onChange={(e) => setSelectedGrammage(parseInt(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              {product.grammages.map((grammage, index) => (
+                <option key={index} value={index.toString()}>
+                  {grammage} - {product.prices[index].toFixed(2)}€
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex items-center justify-between">

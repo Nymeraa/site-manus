@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Mail, MapPin, Send, MessageCircle, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 
 const Contact = () => {
@@ -206,19 +205,20 @@ const Contact = () => {
 
                   <div>
                     <Label htmlFor="subject">Sujet *</Label>
-                    <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisissez un sujet" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="general">Question générale</SelectItem>
-                        <SelectItem value="order">Commande</SelectItem>
-                        <SelectItem value="product">Produit</SelectItem>
-                        <SelectItem value="custom">Mélange personnalisé</SelectItem>
-                        <SelectItem value="partnership">Partenariat</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select 
+                      value={formData.subject} 
+                      onChange={(e) => handleChange('subject', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      required
+                    >
+                      <option value="">Choisissez un sujet</option>
+                      <option value="general">Question générale</option>
+                      <option value="order">Commande</option>
+                      <option value="product">Produit</option>
+                      <option value="custom">Mélange personnalisé</option>
+                      <option value="partnership">Partenariat</option>
+                      <option value="other">Autre</option>
+                    </select>
                   </div>
 
                   <div>
