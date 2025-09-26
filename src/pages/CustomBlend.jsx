@@ -295,24 +295,23 @@ const CustomBlend = () => {
                   />
                 </div>
                 
-                <CardContent className="p-4">
-                  <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                <CardContent className="p-3">
+                  <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                     {ingredient.name}
                   </CardTitle>
                   
-                  <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                  <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                     {ingredient.description}
                   </p>
 
                   {/* Benefits */}
                   {ingredient.benefits && ingredient.benefits.length > 0 && (
-                    <div className="mb-3">
-                      <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                    <div className="mb-2">
                       <div className="flex flex-wrap gap-1">
                         {ingredient.benefits.map((benefit, index) => (
                           <span 
                             key={index}
-                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
                           >
                             {benefit}
                           </span>
@@ -323,12 +322,12 @@ const CustomBlend = () => {
 
                   {/* Warnings */}
                   {ingredient.warnings && ingredient.warnings.length > 0 && (
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <div className="flex flex-wrap gap-1">
                         {ingredient.warnings.map((warning, index) => (
                           <span 
                             key={index}
-                            className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
+                            className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full"
                           >
                             {warning}
                           </span>
@@ -339,14 +338,14 @@ const CustomBlend = () => {
                   
                   <div className="flex items-center justify-between">
                     {ingredientPrice > 0 ? (
-                      <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                      <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
                         +{ingredientPrice.toFixed(2)}€
                       </span>
                     ) : (
                       <span></span>
                     )}
                     {isSelected && (
-                      <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
+                      <div className="text-green-700 text-xs font-medium bg-green-100 px-2 py-1 rounded-full">
                         Sélectionné
                       </div>
                     )}
@@ -498,7 +497,7 @@ const CustomBlend = () => {
                                             {ingredient.name}
                                           </CardTitle>
                                           
-                                          <p className={`text-xs mb-2 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                          <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                             {ingredient.description}
                                           </p>
 
@@ -618,7 +617,7 @@ const CustomBlend = () => {
                                           {ingredient.name}
                                         </CardTitle>
                                         
-                                        <p className={`text-xs mb-2 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                        <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                           {ingredient.description}
                                         </p>
 
@@ -738,31 +737,27 @@ const CustomBlend = () => {
                                   />
                                 </div>
                                 
-                                <CardContent className="p-4">
-                                  <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                <CardContent className="p-3">
+                                  <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                     {ingredient.name}
                                   </CardTitle>
                                   
-                                  <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                  <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                     {ingredient.description}
                                   </p>
 
                                   {/* Benefits */}
                                   {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                    <div className="mb-3">
-                                      <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                    <div className="mb-2">
                                       <div className="flex flex-wrap gap-1">
                                         {ingredient.benefits.map((benefit, index) => (
                                           <span 
                                             key={index}
-                                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
                                           >
                                             {benefit}
                                           </span>
                                         ))}
-
-
-
                                       </div>
                                     </div>
                                   )}
@@ -851,24 +846,23 @@ const CustomBlend = () => {
                                       />
                                     </div>
                                     
-                                    <CardContent className="p-4">
-                                      <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                    <CardContent className="p-3">
+                                      <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                         {ingredient.name}
                                       </CardTitle>
                                       
-                                      <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                      <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                         {ingredient.description}
                                       </p>
 
                                       {/* Benefits */}
                                       {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                        <div className="mb-3">
-                                          <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                        <div className="mb-2">
                                           <div className="flex flex-wrap gap-1">
                                             {ingredient.benefits.map((benefit, index) => (
                                               <span 
                                                 key={index}
-                                                className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
                                               >
                                                 {benefit}
                                               </span>
@@ -879,7 +873,7 @@ const CustomBlend = () => {
 
                                       {/* Warnings */}
                                       {ingredient.warnings && ingredient.warnings.length > 0 && (
-                                        <div className="mb-3">
+                                        <div className="mb-2">
                                           <div className="flex flex-wrap gap-1">
                                             {ingredient.warnings.map((warning, index) => (
                                               <span 
