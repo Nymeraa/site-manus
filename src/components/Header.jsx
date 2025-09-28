@@ -7,26 +7,21 @@ import { Menu, ShoppingCart, Leaf, ChevronDown, Search, User } from 'lucide-reac
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useCart } from '../context/CartContext'
 import SearchModal from './SearchModal'
+import MegaMenu from './MegaMenu'
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [teaMegaMenuOpen, setTeaMegaMenuOpen] = useState(false)
+  const [accessoryMegaMenuOpen, setAccessoryMegaMenuOpen] = useState(false)
   const location = useLocation()
   const { getItemCount } = useCart()
 
   const navigation = [
     { name: 'Accueil', href: '/' },
-    { name: 'Thés et Infusions', href: '/thes-et-infusions', isDropdown: true, subCategories: [
-      { name: 'Voir tout', href: '/thes-et-infusions' },
-      { name: 'Thé Noir', href: '/thes-et-infusions/the-noir' },
-      { name: 'Thé Vert', href: '/thes-et-infusions/the-vert' },
-      { name: 'Thé Blanc', href: '/thes-et-infusions/the-blanc' },
-      { name: 'Rooibos', href: '/thes-et-infusions/rooibos' },
-      { name: 'Infusion', href: '/thes-et-infusions/infusions' },
-      { name: 'Nos Packs', href: '/thes-et-infusions/nos-packs' }
-    ] },
+    { name: 'Thés et Infusions', href: '/thes-et-infusions', isMegaMenu: true, megaMenuType: 'tea' },
     { name: 'Créer ton mélange !', href: '/custom-blend' },
-    { name: 'Accessoires', href: '/accessories' },
+    { name: 'Accessoires', href: '/accessories', isMegaMenu: true, megaMenuType: 'accessories' },
     { name: 'Blogs', href: '/blog' },
     { name: 'Contact', href: '/contact' }
   ]
@@ -46,25 +41,28 @@ const Header = () => {
           {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
-              item.isDropdown ? (
-                <DropdownMenu key={item.name}>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className={`text-sm font-medium transition-colors hover:text-primary ${
+              item.isMegaMenu ? (
+                <div key={item.name} className="relative">
+                  <Button 
+                    variant="ghost" 
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
                       isActive(item.href)
                         ? 'text-primary border-b-2 border-primary'
                         : 'text-muted-foreground'
-                    }`}>
-                      {item.name} <ChevronDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {item.subCategories.map(subItem => (
-                      <DropdownMenuItem key={subItem.name} asChild>
-                        <Link to={subItem.href}>{subItem.name}</Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    }`}
+                    onMouseEnter={() => {
+                      if (item.megaMenuType === 'tea') {
+                        setTeaMegaMenuOpen(true)
+                        setAccessoryMegaMenuOpen(false)
+                      } else if (item.megaMenuType === 'accessories') {
+                        setAccessoryMegaMenuOpen(true)
+                        setTeaMegaMenuOpen(false)
+                      }
+                    }}
+                  >
+                    {item.name} <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </div>
               ) : (
                 <Link
                   key={item.name}
@@ -151,6 +149,36 @@ const Header = () => {
         isOpen={isSearchOpen} 
         onClose={() => setIsSearchOpen(false)} 
       />
+
+      {/* Méga Menus */}
+      <div 
+        className="relative"
+        onMouseLeave={() => {
+          setTeaMegaMenuOpen(false)
+          setAccessoryMegaMenuOpen(false)
+        }}
+      >
+        <MegaMenu
+          title="Thés et Infusions"
+          type="tea"
+          isOpen={teaMegaMenuOpen}
+          onToggle={() => setTeaMegaMenuOpen(!teaMegaMenuOpen)}
+          onClose={() => {
+            setTeaMegaMenuOpen(false)
+            setAccessoryMegaMenuOpen(false)
+          }}
+        />
+        <MegaMenu
+          title="Accessoires"
+          type="accessories"
+          isOpen={accessoryMegaMenuOpen}
+          onToggle={() => setAccessoryMegaMenuOpen(!accessoryMegaMenuOpen)}
+          onClose={() => {
+            setTeaMegaMenuOpen(false)
+            setAccessoryMegaMenuOpen(false)
+          }}
+        />
+      </div>
     </header>
   )
 }
