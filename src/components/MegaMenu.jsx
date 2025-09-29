@@ -121,9 +121,9 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div className="absolute top-full left-0 w-full bg-white shadow-xl border-t z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-4xl mx-auto">
+    <div className="absolute top-full left-1/2 transform -translate-x-1/2 bg-white shadow-xl border border-gray-200 rounded-lg z-50" style={{width: '800px'}}>
+      <div className="px-6 py-4">
+        <div className="w-full">
           {/* Catégories principales */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {categories.map((category) => {

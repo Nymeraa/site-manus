@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from 'react'
+import React, { createContext, useContext, useReducer, useState } from 'react'
+import CartNotification from '../components/CartNotification'
 
 const CartContext = createContext()
 
@@ -50,9 +51,16 @@ const cartReducer = (state, action) => {
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, { items: [] })
+  const [notification, setNotification] = useState({ show: false, productName: '', isCustomBlend: false })
 
   const addItem = (item) => {
     dispatch({ type: 'ADD_ITEM', payload: item })
+    // Show notification
+    setNotification({ 
+      show: true, 
+      productName: item.name, 
+      isCustomBlend: item.isCustomBlend || false 
+    })
   }
 
   const removeItem = (id) => {
@@ -72,11 +80,19 @@ export const CartProvider = ({ children }) => {
   }
 
   const getTotal = () => {
-    return state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+    return state.items.reduce((total, item) => {
+      const price = item.price || 0
+      const quantity = item.quantity || 1
+      return total + (price * quantity)
+    }, 0)
   }
 
   const getItemCount = () => {
-    return state.items.reduce((count, item) => count + item.quantity, 0)
+    return state.items.reduce((count, item) => count + (item.quantity || 1), 0)
+  }
+
+  const closeNotification = () => {
+    setNotification({ show: false, productName: '', isCustomBlend: false })
   }
 
   return (
@@ -90,6 +106,12 @@ export const CartProvider = ({ children }) => {
       getItemCount
     }}>
       {children}
+      <CartNotification 
+        show={notification.show}
+        productName={notification.productName}
+        isCustomBlend={notification.isCustomBlend}
+        onClose={closeNotification}
+      />
     </CartContext.Provider>
   )
 }

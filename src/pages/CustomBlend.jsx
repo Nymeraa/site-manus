@@ -227,14 +227,16 @@ const CustomBlend = () => {
       image: '/src/assets/personnalisation_the_1.png',
       quantity: blendQuantity,
       weight: quantities[selectedQuantity].weight,
-      isCustom: true,
-      ingredients: [...selectedBases, ...selectedIngredients],
+      isCustomBlend: true,
+      base: selectedBases.length > 0 ? selectedBases[0].name : null,
+      ingredients: selectedIngredients.map(ing => ({
+        name: ing.name,
+        category: ing.category
+      })),
       description: blendDescription
     };
 
     addItem(customBlend);
-    
-    alert(`${blendQuantity} x "${blendName}" (${quantities[selectedQuantity].weight}) ajouté(s) au panier.`);
 
     // Reset form
     setSelectedIngredients([]);
@@ -1069,7 +1071,10 @@ const CustomBlend = () => {
                     {/* Other Selected Ingredients */}
                     {selectedIngredients.map((ingredient, index) => (
                       <div key={`${ingredient.id}-${index}`} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                        <span className="text-sm font-medium">{ingredient.name}</span>
+                        <div>
+                          <span className="text-sm font-medium">{ingredient.name}</span>
+                          <span className="text-xs text-green-600 ml-2">({ingredient.category})</span>
+                        </div>
                         <div className="flex items-center gap-2">
                           {ingredient.price[selectedQuantity] > 0 && (
                             <span className="text-sm text-green-600">
