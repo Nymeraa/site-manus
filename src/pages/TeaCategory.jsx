@@ -104,7 +104,7 @@ const ProductCard = ({ product }) => {
 const TeaCategory = () => {
   const { category } = useParams();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('rating');
   const [priceRange, setPriceRange] = useState('all');
 
   // Mapping des catégories URL vers les noms de catégories dans les données
@@ -157,6 +157,8 @@ const TeaCategory = () => {
           return a.price - b.price;
         case 'price-desc':
           return b.price - a.price;
+        case 'rating':
+          return b.rating - a.rating;
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -202,25 +204,13 @@ const TeaCategory = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Price Filter */}
-            <select 
-              value={priceRange} 
-              onChange={(e) => setPriceRange(e.target.value)}
-              className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="all">Tous les prix</option>
-              <option value="0-15">Moins de 15€</option>
-              <option value="15-25">15€ - 25€</option>
-              <option value="25-35">25€ - 35€</option>
-              <option value="35-999">Plus de 35€</option>
-            </select>
-
             {/* Sort */}
             <select 
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
               className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
+              <option value="rating">Mieux notés</option>
               <option value="name">Nom A-Z</option>
               <option value="price-asc">Prix croissant</option>
               <option value="price-desc">Prix décroissant</option>

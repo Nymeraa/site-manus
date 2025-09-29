@@ -10,8 +10,7 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Corsés et riches en saveurs',
       icon: Coffee,
       color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
-      items: ['Earl Grey', 'English Breakfast', 'Darjeeling', 'Assam']
+      bgColor: 'bg-amber-50'
     },
     {
       name: 'Thés Verts',
@@ -19,8 +18,7 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Délicats et rafraîchissants',
       icon: Leaf,
       color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      items: ['Sencha', 'Matcha', 'Jasmin', 'Gunpowder']
+      bgColor: 'bg-green-50'
     },
     {
       name: 'Thés Blancs',
@@ -28,8 +26,7 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Subtils et raffinés',
       icon: Sparkles,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      items: ['Pai Mu Tan', 'Silver Needle', 'Moonlight White']
+      bgColor: 'bg-blue-50'
     },
     {
       name: 'Rooibos',
@@ -37,8 +34,7 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Sans théine, naturellement doux',
       icon: Leaf,
       color: 'text-red-600',
-      bgColor: 'bg-red-50',
-      items: ['Nature', 'Vanille', 'Épices', 'Fruits rouges']
+      bgColor: 'bg-red-50'
     },
     {
       name: 'Infusions',
@@ -46,8 +42,7 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Plantes et fruits pour le bien-être',
       icon: Sparkles,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      items: ['Camomille', 'Menthe', 'Verveine', 'Tilleul']
+      bgColor: 'bg-purple-50'
     },
     {
       name: 'Nos Packs',
@@ -55,65 +50,58 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
       description: 'Coffrets et assortiments',
       icon: Gift,
       color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
-      items: ['Découverte', 'Premium', 'Détente', 'Énergie']
+      bgColor: 'bg-pink-50'
     }
   ]
 
   const accessoryCategories = [
     {
       name: 'Théières',
-      href: '/accessories?category=Théières',
+      href: '/accessories/theieres',
       description: 'Pour infuser avec style',
       icon: Coffee,
       color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
-      items: ['Fonte', 'Porcelaine', 'Verre', 'Céramique']
+      bgColor: 'bg-amber-50'
     },
     {
       name: 'Tasses & Mugs',
-      href: '/accessories?category=Tasses & Mugs',
+      href: '/accessories/tasses-mugs',
       description: 'Pour savourer vos thés',
       icon: Coffee,
       color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      items: ['Porcelaine', 'Grès', 'Verre', 'Bambou']
+      bgColor: 'bg-blue-50'
     },
     {
       name: 'Infusion',
-      href: '/accessories?category=Infusion',
+      href: '/accessories/infusion',
       description: 'Accessoires d\'infusion',
       icon: Leaf,
       color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      items: ['Boules à thé', 'Filtres', 'Passoires', 'Infuseurs']
+      bgColor: 'bg-green-50'
     },
     {
       name: 'Conservation',
-      href: '/accessories?category=Conservation',
+      href: '/accessories/conservation',
       description: 'Pour préserver vos thés',
       icon: Sparkles,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      items: ['Boîtes hermétiques', 'Sachets', 'Bocaux', 'Étuis']
+      bgColor: 'bg-purple-50'
     },
     {
       name: 'Service',
-      href: '/accessories?category=Service',
+      href: '/accessories/service',
       description: 'Art de la table',
       icon: Gift,
       color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
-      items: ['Plateaux', 'Cuillères', 'Sucriers', 'Pots à lait']
+      bgColor: 'bg-pink-50'
     },
     {
       name: 'Électroménager',
-      href: '/accessories?category=Électroménager',
+      href: '/accessories/electromenager',
       description: 'Appareils modernes',
       icon: Coffee,
       color: 'text-gray-600',
-      bgColor: 'bg-gray-50',
-      items: ['Bouilloires', 'Théières électriques', 'Minuteurs']
+      bgColor: 'bg-gray-50'
     }
   ]
 
@@ -134,105 +122,48 @@ const MegaMenu = ({ title, type, isOpen, onToggle, onClose }) => {
 
   return (
     <div className="absolute top-full left-0 w-full bg-white shadow-xl border-t z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-4xl mx-auto">
           {/* Catégories principales */}
-          <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {categories.map((category) => {
-                const IconComponent = category.icon
-                return (
-                  <Link
-                    key={category.name}
-                    to={category.href}
-                    onClick={onClose}
-                    className="group p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className={`p-2 rounded-lg ${category.bgColor} group-hover:scale-110 transition-transform duration-200`}>
-                        <IconComponent className={`h-5 w-5 ${category.color}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {category.description}
-                        </p>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {category.items.slice(0, 3).map((item, index) => (
-                            <span key={index} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                              {item}
-                            </span>
-                          ))}
-                          {category.items.length > 3 && (
-                            <span className="text-xs text-gray-400">+{category.items.length - 3}</span>
-                          )}
-                        </div>
-                      </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map((category) => {
+              const IconComponent = category.icon
+              return (
+                <Link
+                  key={category.name}
+                  to={category.href}
+                  onClick={onClose}
+                  className="group p-3 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-center space-x-2">
+                    <div className={`p-1.5 rounded-lg ${category.bgColor} group-hover:scale-110 transition-transform duration-200`}>
+                      <IconComponent className={`h-4 w-4 ${category.color}`} />
                     </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Section mise en avant */}
-          <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg border">
-              <h3 className="font-bold text-gray-900 mb-4">
-                {type === 'tea' ? 'À découvrir' : 'Sélection'}
-              </h3>
-              <div className="space-y-3">
-                {featuredItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={onClose}
-                    className="block p-3 bg-white rounded-lg hover:shadow-md transition-shadow duration-200"
-                  >
-                    <h4 className="font-medium text-gray-900 hover:text-primary transition-colors">
-                      {item.name}
-                    </h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {item.description}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-              
-              {type === 'tea' && (
-                <div className="mt-6 p-4 bg-white rounded-lg border-2 border-dashed border-green-200">
-                  <div className="text-center">
-                    <Leaf className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <h4 className="font-semibold text-gray-900">Personnalisation</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Créez votre mélange unique avec nos ingrédients premium
-                    </p>
-                    <Link
-                      to="/custom-blend"
-                      onClick={onClose}
-                      className="inline-block mt-3 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      Commencer
-                    </Link>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm text-gray-900 group-hover:text-primary transition-colors">
+                        {category.name}
+                      </h3>
+                      <p className="text-xs text-gray-600 mt-0.5">
+                        {category.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                </Link>
+              )
+            })}
           </div>
-        </div>
 
-        {/* Lien "Voir tout" */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <Link
-            to={type === 'tea' ? '/thes-et-infusions' : '/accessories'}
-            onClick={onClose}
-            className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors"
-          >
-            Voir tout {type === 'tea' ? 'nos thés et infusions' : 'nos accessoires'}
-            <ChevronDown className="ml-1 h-4 w-4 rotate-[-90deg]" />
-          </Link>
+          {/* Lien "Voir tout" */}
+          <div className="mt-4 pt-3 border-t border-gray-200 text-center">
+            <Link
+              to={type === 'tea' ? '/thes-et-infusions' : '/accessories'}
+              onClick={onClose}
+              className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors text-sm"
+            >
+              Voir tout {type === 'tea' ? 'nos thés et infusions' : 'nos accessoires'}
+              <ChevronDown className="ml-1 h-4 w-4 rotate-[-90deg]" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
