@@ -193,7 +193,20 @@ const CustomBlend = () => {
           alert("Maximum 5 éléments au total");
           return;
         }
-        setSelectedIngredients([...selectedIngredients, ingredient]);
+        // Déterminer la catégorie de l'ingrédient
+        let category = 'ingrédient';
+        if (customBlendIngredients.fruits.some(f => f.id === ingredient.id)) {
+          category = 'fruit';
+        } else if (customBlendIngredients.fleurs.some(f => f.id === ingredient.id)) {
+          category = 'fleur';
+        } else if (customBlendIngredients.herbesPlantes.some(h => h.id === ingredient.id)) {
+          category = 'herbe et plante';
+        } else if (customBlendIngredients.epices.some(e => e.id === ingredient.id)) {
+          category = 'épice';
+        }
+        
+        const ingredientWithCategory = { ...ingredient, category };
+        setSelectedIngredients([...selectedIngredients, ingredientWithCategory]);
       }
     }
   };
@@ -233,7 +246,8 @@ const CustomBlend = () => {
         name: ing.name,
         category: ing.category
       })),
-      description: blendDescription
+      description: blendDescription,
+      blendQuantity: blendQuantity
     };
 
     addItem(customBlend);
