@@ -15,7 +15,7 @@ const CartNotification = ({ show, onClose, productName, isCustomBlend = false })
   if (!show) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right duration-300">
       <div className="bg-white border border-green-200 rounded-lg shadow-lg p-4 max-w-sm">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">

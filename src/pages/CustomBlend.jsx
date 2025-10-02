@@ -447,7 +447,7 @@ const CustomBlend = () => {
                   <TabsList className="grid w-full grid-cols-6 mb-8">
                     <TabsTrigger value="bases">Bases</TabsTrigger>
                     <TabsTrigger value="fruits">Fruits</TabsTrigger>
-                    <TabsTrigger value="herbes">Herbes & Plantes</TabsTrigger>
+                    <TabsTrigger value="herbesPlantes">Herbes & Plantes</TabsTrigger>
                     <TabsTrigger value="fleurs">Fleurs</TabsTrigger>
                     <TabsTrigger value="epices">Épices</TabsTrigger>
                     <TabsTrigger value="tous">Tous les ingrédients</TabsTrigger>
@@ -703,7 +703,7 @@ const CustomBlend = () => {
 
                   {renderIngredientSection("Bases", customBlendIngredients.bases, "bases", true)}
                   {renderIngredientSection("Fruits", customBlendIngredients.fruits, "fruits")}
-                  {renderIngredientSection("Herbes & Plantes", customBlendIngredients.herbes, "herbes")}
+                  {renderIngredientSection("Herbes & Plantes", customBlendIngredients.herbesPlantes, "herbesPlantes")}
                   {renderIngredientSection("Fleurs", customBlendIngredients.fleurs, "fleurs")}
                   {renderIngredientSection("Épices", customBlendIngredients.epices, "epices")}
                   
@@ -818,10 +818,10 @@ const CustomBlend = () => {
                       {/* Other Ingredients */}
                       {Object.entries(customBlendIngredients).map(([categoryKey, ingredients]) => {
                         if (categoryKey === 'bases') return null;
-                        const categoryOrder = ['fruits', 'herbes', 'fleurs', 'epices'];
+                        const categoryOrder = ['fruits', 'herbesPlantes', 'fleurs', 'epices'];
                         const categoryNames = {
                           'fruits': 'Fruits',
-                          'herbes': 'Herbes & Plantes',
+                          'herbesPlantes': 'Herbes & Plantes',
                           'fleurs': 'Fleurs',
                           'epices': 'Épices'
                         };

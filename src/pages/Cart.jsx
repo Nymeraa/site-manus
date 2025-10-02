@@ -72,7 +72,7 @@ const Cart = () => {
                           <p>Ingrédients: {item.ingredients && item.ingredients.length > 0 
                             ? item.ingredients.map(ing => `${ing.name} (${ing.category || 'ingrédient'})`).join(', ') 
                             : 'Aucun'}</p>
-                          <p>Quantité: {item.blendQuantity || item.quantity || 1}</p>
+                          <p>Quantité: {item.weight || `${item.blendQuantity || item.quantity || 1} unité(s)`}</p>
                           {item.description && <p>Description: {item.description}</p>}
                         </div>
                       ) : (

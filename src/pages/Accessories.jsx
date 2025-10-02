@@ -11,7 +11,7 @@ import { useCart } from '../context/CartContext'
 const Accessories = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Tous')
-  const [sortBy, setSortBy] = useState('name')
+  const [sortBy, setSortBy] = useState('rating')
   const [priceRange, setPriceRange] = useState('all')
   const [quantities, setQuantities] = useState({}) // Track quantities for each accessory
   const { addItem } = useCart()
@@ -89,7 +89,7 @@ const Accessories = () => {
 
         {/* Filtres */}
         <div className="bg-card rounded-lg p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Recherche */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -114,28 +114,16 @@ const Accessories = () => {
               ))}
             </select>
 
-            {/* Prix */}
-            <select 
-              value={priceRange} 
-              onChange={(e) => setPriceRange(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="all">Tous les prix</option>
-              <option value="under-20">Moins de 20€</option>
-              <option value="20-50">20€ - 50€</option>
-              <option value="over-50">Plus de 50€</option>
-            </select>
-
             {/* Tri */}
             <select 
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
-              <option value="name">Nom</option>
+              <option value="rating">Mieux notés</option>
+              <option value="name">Nom A-Z</option>
               <option value="price-low">Prix croissant</option>
               <option value="price-high">Prix décroissant</option>
-              <option value="rating">Note</option>
             </select>
           </div>
         </div>

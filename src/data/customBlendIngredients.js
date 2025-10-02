@@ -167,7 +167,7 @@ export const customBlendIngredients = {
       image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
     }
   ],
-  herbes: [
+  herbesPlantes: [
     { 
       id: 14, 
       name: "Menthe Poivrée", 
