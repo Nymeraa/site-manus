@@ -50,13 +50,13 @@ git clone https://github.com/Nymeraa/site-manus.git
 cd site-manus
 
 # Installer les dépendances
-npm install
+pnpm install
 
 # Lancer en développement
-npm run dev
+pnpm run dev
 
 # Build pour production
-npm run build
+pnpm run build
 ```
 
 ## 📁 Structure du Projet
