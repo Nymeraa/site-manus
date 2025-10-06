@@ -1,6 +1,8 @@
-# TeaBlend - E-commerce de Thés et Infusions
+# TeaBlend : Plateforme E-commerce Avancée pour Thés & Infusions
 
-Site e-commerce moderne pour la vente de thés, infusions et accessoires avec une fonctionnalité unique de personnalisation de mélanges.
+**TeaBlend** est un site e-commerce de démonstration, riche en fonctionnalités, conçu pour la vente de thés, infusions et accessoires. Il intègre un outil de création de mélanges personnalisés, permettant aux utilisateurs de composer leurs propres thés à partir d'une large sélection d'ingrédients.
+
+*Ce projet est une démonstration et non un site commercial réel.*
 
 ## 🌟 Fonctionnalités
 
@@ -126,3 +128,4 @@ Ce projet est sous licence MIT.
 ## 👥 Contribution
 
 Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou proposer une pull request.
+
