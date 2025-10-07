@@ -33,7 +33,7 @@ export const customBlendIngredients = {
       description: "Base subtile et raffinée", 
       price: [1.0, 2.0, 3.5, 8.5, 15.0],
       benefits: ["antioxydants", "énergie très légère"],
-      warnings: ["Peu de caféine"],
+      warnings: ["peu de caféine"],
       image: "https://images.unsplash.com/photo-1563822249548-9a72b6353cd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
     },
     { 
@@ -167,7 +167,7 @@ export const customBlendIngredients = {
       image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
     }
   ],
-  herbes: [
+  herbesPlantes: [
     { 
       id: 14, 
       name: "Menthe Poivrée", 

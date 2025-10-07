@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Star, Search, Filter, ShoppingCart, Plus, Minus } from 'lucide-react'
 import { accessories, accessoryCategories } from '../data/accessories'
 import { useCart } from '../context/CartContext'
@@ -12,7 +11,7 @@ import { useCart } from '../context/CartContext'
 const Accessories = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Tous')
-  const [sortBy, setSortBy] = useState('name')
+  const [sortBy, setSortBy] = useState('rating')
   const [priceRange, setPriceRange] = useState('all')
   const [quantities, setQuantities] = useState({}) // Track quantities for each accessory
   const { addItem } = useCart()
@@ -90,7 +89,7 @@ const Accessories = () => {
 
         {/* Filtres */}
         <div className="bg-card rounded-lg p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Recherche */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -103,50 +102,35 @@ const Accessories = () => {
             </div>
 
             {/* Catégorie */}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {accessoryCategories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Prix */}
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Prix" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les prix</SelectItem>
-                <SelectItem value="under-20">Moins de 20€</SelectItem>
-                <SelectItem value="20-50">20€ - 50€</SelectItem>
-                <SelectItem value="over-50">Plus de 50€</SelectItem>
-              </SelectContent>
-            </Select>
+            <select 
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              {accessoryCategories && accessoryCategories.map(category => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
 
             {/* Tri */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Nom</SelectItem>
-                <SelectItem value="price-low">Prix croissant</SelectItem>
-                <SelectItem value="price-high">Prix décroissant</SelectItem>
-                <SelectItem value="rating">Note</SelectItem>
-              </SelectContent>
-            </Select>
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="rating">Mieux notés</option>
+              <option value="name">Nom A-Z</option>
+              <option value="price-low">Prix croissant</option>
+              <option value="price-high">Prix décroissant</option>
+            </select>
           </div>
         </div>
 
         {/* Grille des accessoires */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredAndSortedAccessories.map((accessory) => (
+          {filteredAndSortedAccessories && filteredAndSortedAccessories.map((accessory) => (
             <Card key={accessory.id} className="group hover:shadow-lg transition-shadow">
               <div className="relative overflow-hidden rounded-t-lg">
                 <img

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lightbulb, X, Scale, Plus, Minus, AlertCircle } from 'lucide-react';
+import { Lightbulb, X, Scale, Plus, Minus, AlertCircle, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const CustomBlend = () => {
@@ -15,6 +15,8 @@ const CustomBlend = () => {
   const [blendDescription, setBlendDescription] = useState('');
   const [selectedQuantity, setSelectedQuantity] = useState(2); // Default to 100g (index 2)
   const [blendQuantity, setBlendQuantity] = useState(1); // Number of blend units to add
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilters, setActiveFilters] = useState([]);
   const { addItem } = useCart();
 
   // Auto-select "Infusion" base when 5 ingredients are selected and no other base
@@ -26,6 +28,51 @@ const CustomBlend = () => {
       }
     }
   }, [selectedIngredients.length, selectedBases.length]);
+
+  const filterOptions = [
+    { label: 'Relaxant', value: 'relaxant' },
+    { label: 'Énergisant', value: 'énergisant' },
+    { label: 'Digestif', value: 'digestif' },
+    { label: 'Antioxydants', value: 'antioxydants' },
+    { label: 'Fruité', value: 'fruité' },
+    { label: 'Épicé', value: 'épicé' },
+    { label: 'Floral', value: 'floral' },
+    { label: 'Rafraîchissant', value: 'rafraîchissant' },
+    { label: 'Tonifiant', value: 'tonifiant' },
+    { label: 'Apaisant', value: 'apaisant' }
+  ];
+
+  const toggleFilter = (filterValue) => {
+    setActiveFilters(prev => 
+      prev.includes(filterValue) 
+        ? prev.filter(f => f !== filterValue)
+        : [...prev, filterValue]
+    );
+  };
+
+  const filterIngredients = (ingredients) => {
+    let filtered = ingredients;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(ingredient =>
+        ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ingredient.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by active filters
+    if (activeFilters.length > 0) {
+      filtered = filtered.filter(ingredient => {
+        const benefits = ingredient.benefits || [];
+        return activeFilters.some(filter => 
+          benefits.some(benefit => benefit.toLowerCase().includes(filter.toLowerCase()))
+        );
+      });
+    }
+
+    return filtered;
+  };
 
   const calculateTotalPrice = () => {
     const basePrice = basePrices[selectedQuantity];
@@ -116,13 +163,15 @@ const CustomBlend = () => {
           // Matcha can be added to any existing base
           setSelectedBases([...selectedBases, ingredient]);
         } else if (ingredient.name === "Infusion") {
-          // Infusion can be added alongside other bases
-          setSelectedBases([...selectedBases, ingredient]);
+          // Infusion can only be selected if no other base is selected
+          const hasOtherBase = selectedBases.some(base => base.name !== "Matcha");
+          if (!hasOtherBase) {
+            setSelectedBases([...selectedBases, ingredient]);
+          }
         } else {
-          // Regular base: replace all non-matcha, non-infusion bases but keep matcha and infusion
+          // Regular base: replace all non-matcha bases but keep matcha
           const matchaBase = selectedBases.find(base => base.name === "Matcha");
-          const infusionBase = selectedBases.find(base => base.name === "Infusion");
-          const keepBases = [matchaBase, infusionBase].filter(Boolean);
+          const keepBases = matchaBase ? [matchaBase] : [];
           setSelectedBases([...keepBases, ingredient]);
         }
       }
@@ -144,7 +193,20 @@ const CustomBlend = () => {
           alert("Maximum 5 éléments au total");
           return;
         }
-        setSelectedIngredients([...selectedIngredients, ingredient]);
+        // Déterminer la catégorie de l'ingrédient
+        let category = 'ingrédient';
+        if (customBlendIngredients.fruits.some(f => f.id === ingredient.id)) {
+          category = 'fruit';
+        } else if (customBlendIngredients.fleurs.some(f => f.id === ingredient.id)) {
+          category = 'fleur';
+        } else if (customBlendIngredients.herbesPlantes.some(h => h.id === ingredient.id)) {
+          category = 'herbe et plante';
+        } else if (customBlendIngredients.epices.some(e => e.id === ingredient.id)) {
+          category = 'épice';
+        }
+        
+        const ingredientWithCategory = { ...ingredient, category };
+        setSelectedIngredients([...selectedIngredients, ingredientWithCategory]);
       }
     }
   };
@@ -178,14 +240,17 @@ const CustomBlend = () => {
       image: '/src/assets/personnalisation_the_1.png',
       quantity: blendQuantity,
       weight: quantities[selectedQuantity].weight,
-      isCustom: true,
-      ingredients: [...selectedBases, ...selectedIngredients],
-      description: blendDescription
+      isCustomBlend: true,
+      base: selectedBases.length > 0 ? selectedBases[0].name : null,
+      ingredients: selectedIngredients.map(ing => ({
+        name: ing.name,
+        category: ing.category
+      })),
+      description: blendDescription,
+      blendQuantity: blendQuantity
     };
 
     addItem(customBlend);
-    
-    alert(`${blendQuantity} x "${blendName}" (${quantities[selectedQuantity].weight}) ajouté(s) au panier.`);
 
     // Reset form
     setSelectedIngredients([]);
@@ -196,111 +261,124 @@ const CustomBlend = () => {
     setBlendQuantity(1);
   };
 
-  const renderIngredientSection = (categoryName, ingredients, tabValue, isBase = false) => (
-    <TabsContent value={tabValue}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ingredients.map((ingredient) => {
-          const isSelected = isIngredientSelected(ingredient, isBase);
-          const ingredientPrice = ingredient.price[selectedQuantity];
-          const counts = getIngredientCount();
-          
-          // Check if ingredient can be selected
-          let canSelect = isSelected;
-          if (!isSelected) {
-            if (isBase) {
-              canSelect = ingredient.name === "Matcha" || ingredient.name === "Infusion" || counts.bases === 0;
-            } else {
-              const maxIngredients = getMaxIngredients();
-              canSelect = counts.ingredients < maxIngredients && counts.total < 5;
+  const renderIngredientSection = (categoryName, ingredients, tabValue, isBase = false) => {
+    const filteredIngredients = filterIngredients(ingredients);
+    
+    return (
+      <TabsContent value={tabValue}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredIngredients.map((ingredient) => {
+            const isSelected = isIngredientSelected(ingredient, isBase);
+            const ingredientPrice = ingredient.price[selectedQuantity];
+            const counts = getIngredientCount();
+            
+            // Check if ingredient can be selected
+            let canSelect = isSelected;
+            if (!isSelected) {
+              if (isBase) {
+                if (ingredient.name === "Infusion") {
+                  // Infusion can only be selected if no other base is selected
+                  canSelect = !selectedBases.some(base => base.name !== "Matcha");
+                } else {
+                  canSelect = ingredient.name === "Matcha" || counts.bases === 0;
+                }
+              } else {
+                const maxIngredients = getMaxIngredients();
+                canSelect = counts.ingredients < maxIngredients && counts.total < 5;
+              }
             }
-          }
-          
-          return (
-            <Card 
-              key={ingredient.id} 
-              className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
-                isSelected 
-                  ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
-                  : canSelect 
-                    ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
-                    : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
-              }`}
-              onClick={() => canSelect && toggleIngredient(ingredient, isBase)}
-            >
-              {/* Image Header */}
-              <div className="aspect-square overflow-hidden bg-gray-100">
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`w-full h-full object-cover transition-all duration-300 ${
-                    isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
-                  }`}
-                />
-              </div>
-              
-              <CardContent className="p-4">
-                <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
-                  {ingredient.name}
-                </CardTitle>
-                
-                <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
-                  {ingredient.description}
-                </p>
-
-                {/* Benefits */}
-                {ingredient.benefits && ingredient.benefits.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {ingredient.benefits.map((benefit, index) => (
-                        <span 
-                          key={index}
-                          className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
-                        >
-                          {benefit}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Warnings */}
-                {ingredient.warnings && ingredient.warnings.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex flex-wrap gap-1">
-                      {ingredient.warnings.map((warning, index) => (
-                        <span 
-                          key={index}
-                          className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs"
-                        >
-                          {warning}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between">
-                  {ingredientPrice > 0 ? (
-                    <span className={`font-bold text-lg ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
-                      +{ingredientPrice.toFixed(2)}€
-                    </span>
-                  ) : (
-                    <span></span>
-                  )}
-                  {isSelected && (
-                    <div className="text-green-700 text-sm font-medium bg-green-100 px-2 py-1 rounded-full">
-                      Sélectionné
-                    </div>
-                  )}
+            
+            return (
+              <Card 
+                key={ingredient.id} 
+                className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
+                  isSelected 
+                    ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
+                    : canSelect 
+                      ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
+                      : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
+                }`}
+                onClick={() => canSelect && toggleIngredient(ingredient, isBase)}
+              >
+                {/* Image Header */}
+                <div className="aspect-square overflow-hidden bg-gray-100">
+                  <img
+                    src={ingredient.image}
+                    alt={ingredient.name}
+                    className={`w-full h-full object-cover transition-all duration-300 ${
+                      isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
+                    }`}
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </TabsContent>
-  );
+                
+                <CardContent className="p-3">
+                  <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                    {ingredient.name}
+                  </CardTitle>
+                  
+                  <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                    {ingredient.description}
+                  </p>
+
+                  {/* Benefits */}
+                  {ingredient.benefits && ingredient.benefits.length > 0 && (
+                    <div className="mb-2">
+                      <div className="flex flex-wrap gap-1">
+                        {ingredient.benefits.map((benefit, index) => (
+                          <span 
+                            key={index}
+                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
+                          >
+                            {benefit}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Warnings */}
+                  {ingredient.warnings && ingredient.warnings.length > 0 && (
+                    <div className="mb-2">
+                      <div className="flex flex-wrap gap-1">
+                        {ingredient.warnings.map((warning, index) => (
+                          <span 
+                            key={index}
+                            className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full"
+                          >
+                            {warning}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between">
+                    {ingredientPrice > 0 ? (
+                      <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                        +{ingredientPrice.toFixed(2)}€
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
+                    {isSelected && (
+                      <div className="text-green-700 text-xs font-medium bg-green-100 px-2 py-1 rounded-full">
+                        Sélectionné
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+        {filteredIngredients.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            Aucun ingrédient ne correspond à votre recherche ou aux filtres sélectionnés.
+          </div>
+        )}
+      </TabsContent>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -328,20 +406,305 @@ const CustomBlend = () => {
                 </p>
               </CardHeader>
               <CardContent className="p-8">
+                {/* Search and Filters */}
+                <div className="mb-8 space-y-4">
+                  {/* Search Bar and Filter */}
+                  <div className="flex gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        type="text"
+                        placeholder="Rechercher un ingrédient..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    
+                    {/* Filter Dropdown */}
+                    <select 
+                      value={activeFilters.length > 0 ? activeFilters[0] : "tous"} 
+                      onChange={(e) => {
+                        if (e.target.value === "tous") {
+                          setActiveFilters([]);
+                        } else {
+                          setActiveFilters([e.target.value]);
+                        }
+                      }}
+                      className="w-[180px] px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    >
+                      <option value="tous">Tous</option>
+                      {filterOptions.map((filter) => (
+                        <option key={filter.value} value={filter.value}>
+                          {filter.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <Tabs defaultValue="bases" className="w-full">
                   <TabsList className="grid w-full grid-cols-6 mb-8">
                     <TabsTrigger value="bases">Bases</TabsTrigger>
                     <TabsTrigger value="fruits">Fruits</TabsTrigger>
+                    <TabsTrigger value="herbesPlantes">Herbes & Plantes</TabsTrigger>
                     <TabsTrigger value="fleurs">Fleurs</TabsTrigger>
-                    <TabsTrigger value="herbes">Herbes & Plantes</TabsTrigger>
                     <TabsTrigger value="epices">Épices</TabsTrigger>
                     <TabsTrigger value="tous">Tous les ingrédients</TabsTrigger>
                   </TabsList>
 
+                  {/* Résultats de recherche affichés en-dessous des onglets */}
+                  {searchTerm && (
+                    <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                      <h3 className="text-lg font-semibold text-blue-900 mb-4">
+                        Résultats de recherche pour "{searchTerm}" ({
+                          Object.values(customBlendIngredients).flat().filter(ingredient => 
+                            filterIngredients([ingredient]).length > 0
+                          ).length
+                        } résultats)
+                      </h3>
+                      <div className="space-y-8">
+                        {/* Bases trouvées */}
+                        {(() => {
+                          const basesFound = filterIngredients(customBlendIngredients.bases);
+                          if (basesFound.length > 0) {
+                            return (
+                              <div>
+                                <h4 className="text-md font-medium text-gray-900 mb-3">Bases ({basesFound.length})</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  {basesFound.map((ingredient) => {
+                                    const isSelected = isIngredientSelected(ingredient, true);
+                                    const ingredientPrice = ingredient.price[selectedQuantity];
+                                    const counts = getIngredientCount();
+                                    let canSelect = isSelected;
+                                    
+                                    if (!isSelected) {
+                                      if (ingredient.name === "Infusion") {
+                                        canSelect = !selectedBases.some(base => base.name !== "Matcha");
+                                      } else {
+                                        canSelect = ingredient.name === "Matcha" || counts.bases === 0;
+                                      }
+                                    }
+                                    
+                                    return (
+                                      <Card 
+                                        key={ingredient.id} 
+                                        className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
+                                          isSelected 
+                                            ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
+                                            : canSelect 
+                                              ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
+                                              : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
+                                        }`}
+                                        onClick={() => canSelect && toggleIngredient(ingredient, true)}
+                                      >
+                                        <div className="aspect-square overflow-hidden bg-gray-100">
+                                          <img
+                                            src={ingredient.image}
+                                            alt={ingredient.name}
+                                            className={`w-full h-full object-cover transition-all duration-300 ${
+                                              isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
+                                            }`}
+                                          />
+                                        </div>
+                                        
+                                        <CardContent className="p-3">
+                                          <CardTitle className={`text-sm mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                            {ingredient.name}
+                                          </CardTitle>
+                                          
+                                          <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                            {ingredient.description}
+                                          </p>
+
+                                          {/* Benefits */}
+                                          {ingredient.benefits && ingredient.benefits.length > 0 && (
+                                            <div className="mb-2">
+                                              <div className="flex flex-wrap gap-1">
+                                                {ingredient.benefits.slice(0, 2).map((benefit, index) => (
+                                                  <span 
+                                                    key={index}
+                                                    className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded-full text-xs"
+                                                  >
+                                                    {benefit}
+                                                  </span>
+                                                ))}
+                                                {ingredient.benefits.length > 2 && (
+                                                  <span className="text-xs text-gray-500">+{ingredient.benefits.length - 2}</span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Warnings */}
+                                          {ingredient.warnings && ingredient.warnings.length > 0 && (
+                                            <div className="mb-2">
+                                              <div className="flex flex-wrap gap-1">
+                                                {ingredient.warnings.slice(0, 1).map((warning, index) => (
+                                                  <span 
+                                                    key={index}
+                                                    className="text-xs bg-amber-100 text-amber-700 px-1 py-0.5 rounded-full text-xs"
+                                                  >
+                                                    {warning}
+                                                  </span>
+                                                ))}
+                                                {ingredient.warnings.length > 1 && (
+                                                  <span className="text-xs text-gray-500">+{ingredient.warnings.length - 1}</span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          <div className="flex items-center justify-between">
+                                            {ingredientPrice > 0 ? (
+                                              <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                                +{ingredientPrice.toFixed(2)}€
+                                              </span>
+                                            ) : (
+                                              <span></span>
+                                            )}
+                                            {isSelected && (
+                                              <div className="text-green-700 text-xs font-medium bg-green-100 px-1 py-0.5 rounded-full">
+                                                ✓
+                                              </div>
+                                            )}
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+
+                        {/* Autres ingrédients trouvés */}
+                        {Object.entries(customBlendIngredients).map(([categoryKey, ingredients]) => {
+                          if (categoryKey === 'bases') return null;
+                          const categoryNames = {
+                            'fruits': 'Fruits',
+                            'herbes': 'Herbes & Plantes',
+                            'fleurs': 'Fleurs',
+                            'epices': 'Épices'
+                          };
+                          
+                          const filteredIngredients = filterIngredients(ingredients);
+                          if (filteredIngredients.length === 0) return null;
+                          
+                          return (
+                            <div key={categoryKey}>
+                              <h4 className="text-md font-medium text-gray-900 mb-3">
+                                {categoryNames[categoryKey]} ({filteredIngredients.length})
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredIngredients.map((ingredient) => {
+                                  const isSelected = isIngredientSelected(ingredient, false);
+                                  const ingredientPrice = ingredient.price[selectedQuantity];
+                                  const counts = getIngredientCount();
+                                  const maxIngredients = getMaxIngredients();
+                                  const canSelect = isSelected || (counts.ingredients < maxIngredients && counts.total < 5);
+                                  
+                                  return (
+                                    <Card 
+                                      key={ingredient.id} 
+                                      className={`cursor-pointer transition-all duration-300 border-2 overflow-hidden group ${
+                                        isSelected 
+                                          ? 'border-green-700 bg-green-50 shadow-lg scale-105' 
+                                          : canSelect 
+                                            ? 'border-gray-200 hover:border-green-400 hover:shadow-md hover:scale-102'
+                                            : 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-50'
+                                      }`}
+                                      onClick={() => canSelect && toggleIngredient(ingredient, false)}
+                                    >
+                                      <div className="aspect-square overflow-hidden bg-gray-100">
+                                        <img
+                                          src={ingredient.image}
+                                          alt={ingredient.name}
+                                          className={`w-full h-full object-cover transition-all duration-300 ${
+                                            isSelected ? 'brightness-110' : canSelect ? 'group-hover:scale-110' : 'grayscale'
+                                          }`}
+                                        />
+                                      </div>
+                                      
+                                      <CardContent className="p-3">
+                                        <CardTitle className={`text-sm mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                          {ingredient.name}
+                                        </CardTitle>
+                                        
+                                        <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                          {ingredient.description}
+                                        </p>
+
+                                        {/* Benefits */}
+                                        {ingredient.benefits && ingredient.benefits.length > 0 && (
+                                          <div className="mb-2">
+                                            <div className="flex flex-wrap gap-1">
+                                              {ingredient.benefits.slice(0, 2).map((benefit, index) => (
+                                                <span 
+                                                  key={index}
+                                                  className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded-full text-xs"
+                                                >
+                                                  {benefit}
+                                                </span>
+                                              ))}
+                                              {ingredient.benefits.length > 2 && (
+                                                <span className="text-xs text-gray-500">+{ingredient.benefits.length - 2}</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* Warnings */}
+                                        {ingredient.warnings && ingredient.warnings.length > 0 && (
+                                          <div className="mb-2">
+                                            <div className="flex flex-wrap gap-1">
+                                              {ingredient.warnings.slice(0, 1).map((warning, index) => (
+                                                <span 
+                                                  key={index}
+                                                  className="text-xs bg-amber-100 text-amber-700 px-1 py-0.5 rounded-full text-xs"
+                                                >
+                                                  {warning}
+                                                </span>
+                                              ))}
+                                              {ingredient.warnings.length > 1 && (
+                                                <span className="text-xs text-gray-500">+{ingredient.warnings.length - 1}</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )}
+                                        
+                                        <div className="flex items-center justify-between">
+                                          {ingredientPrice > 0 ? (
+                                            <span className={`font-bold text-sm ${canSelect ? 'text-green-700' : 'text-gray-400'}`}>
+                                              +{ingredientPrice.toFixed(2)}€
+                                            </span>
+                                          ) : (
+                                            <span></span>
+                                          )}
+                                          {isSelected && (
+                                            <div className="text-green-700 text-xs font-medium bg-green-100 px-1 py-0.5 rounded-full">
+                                              ✓
+                                            </div>
+                                          )}
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {renderIngredientSection("Bases", customBlendIngredients.bases, "bases", true)}
                   {renderIngredientSection("Fruits", customBlendIngredients.fruits, "fruits")}
+                  {renderIngredientSection("Herbes & Plantes", customBlendIngredients.herbesPlantes, "herbesPlantes")}
                   {renderIngredientSection("Fleurs", customBlendIngredients.fleurs, "fleurs")}
-                  {renderIngredientSection("Herbes & Plantes", customBlendIngredients.herbes, "herbes")}
                   {renderIngredientSection("Épices", customBlendIngredients.epices, "epices")}
                   
                   <TabsContent value="tous">
@@ -353,11 +716,19 @@ const CustomBlend = () => {
                         </h3>
                         <p className="text-sm text-gray-600 mb-6">Sélectionnez une base principale. Le matcha peut être ajouté en complément.</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {customBlendIngredients.bases.map((ingredient) => {
+                          {filterIngredients(customBlendIngredients.bases).map((ingredient) => {
                             const isSelected = isIngredientSelected(ingredient, true);
                             const ingredientPrice = ingredient.price[selectedQuantity];
                             const counts = getIngredientCount();
-                            const canSelect = isSelected || ingredient.name === "Matcha" || ingredient.name === "Infusion" || counts.bases === 0;
+                            let canSelect = isSelected;
+                            
+                            if (!isSelected) {
+                              if (ingredient.name === "Infusion") {
+                                canSelect = !selectedBases.some(base => base.name !== "Matcha");
+                              } else {
+                                canSelect = ingredient.name === "Matcha" || counts.bases === 0;
+                              }
+                            }
                             
                             return (
                               <Card 
@@ -382,24 +753,23 @@ const CustomBlend = () => {
                                   />
                                 </div>
                                 
-                                <CardContent className="p-4">
-                                  <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                <CardContent className="p-3">
+                                  <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                     {ingredient.name}
                                   </CardTitle>
                                   
-                                  <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                  <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                     {ingredient.description}
                                   </p>
 
                                   {/* Benefits */}
                                   {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                    <div className="mb-3">
-                                      <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                    <div className="mb-2">
                                       <div className="flex flex-wrap gap-1">
                                         {ingredient.benefits.map((benefit, index) => (
                                           <span 
                                             key={index}
-                                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                            className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
                                           >
                                             {benefit}
                                           </span>
@@ -448,14 +818,21 @@ const CustomBlend = () => {
                       {/* Other Ingredients */}
                       {Object.entries(customBlendIngredients).map(([categoryKey, ingredients]) => {
                         if (categoryKey === 'bases') return null;
+                        const categoryOrder = ['fruits', 'herbesPlantes', 'fleurs', 'epices'];
+                        const categoryNames = {
+                          'fruits': 'Fruits',
+                          'herbesPlantes': 'Herbes & Plantes',
+                          'fleurs': 'Fleurs',
+                          'epices': 'Épices'
+                        };
+                        
                         return (
                           <div key={categoryKey}>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4 capitalize">
-                              {categoryKey === 'herbes' ? 'Herbes & Plantes' : 
-                               categoryKey === 'epices' ? 'Épices' : categoryKey}
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                              {categoryNames[categoryKey]}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                              {ingredients.map((ingredient) => {
+                              {filterIngredients(ingredients).map((ingredient) => {
                                 const isSelected = isIngredientSelected(ingredient, false);
                                 const ingredientPrice = ingredient.price[selectedQuantity];
                                 const counts = getIngredientCount();
@@ -485,24 +862,23 @@ const CustomBlend = () => {
                                       />
                                     </div>
                                     
-                                    <CardContent className="p-4">
-                                      <CardTitle className={`text-lg mb-2 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
+                                    <CardContent className="p-3">
+                                      <CardTitle className={`text-base mb-1 ${isSelected ? 'text-green-800' : canSelect ? 'text-gray-900' : 'text-gray-500'}`}>
                                         {ingredient.name}
                                       </CardTitle>
                                       
-                                      <p className={`text-sm mb-3 leading-relaxed ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
+                                      <p className={`text-xs mb-2 leading-snug ${canSelect ? 'text-gray-600' : 'text-gray-400'}`}>
                                         {ingredient.description}
                                       </p>
 
                                       {/* Benefits */}
                                       {ingredient.benefits && ingredient.benefits.length > 0 && (
-                                        <div className="mb-3">
-                                          <p className="text-xs font-medium text-gray-700 mb-1">Bénéfices:</p>
+                                        <div className="mb-2">
                                           <div className="flex flex-wrap gap-1">
                                             {ingredient.benefits.map((benefit, index) => (
                                               <span 
                                                 key={index}
-                                                className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs"
+                                                className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full"
                                               >
                                                 {benefit}
                                               </span>
@@ -513,7 +889,7 @@ const CustomBlend = () => {
 
                                       {/* Warnings */}
                                       {ingredient.warnings && ingredient.warnings.length > 0 && (
-                                        <div className="mb-3">
+                                        <div className="mb-2">
                                           <div className="flex flex-wrap gap-1">
                                             {ingredient.warnings.map((warning, index) => (
                                               <span 
@@ -546,6 +922,11 @@ const CustomBlend = () => {
                                 );
                               })}
                             </div>
+                            {filterIngredients(ingredients).length === 0 && (
+                              <div className="text-center py-4 text-gray-500">
+                                Aucun ingrédient ne correspond à votre recherche ou aux filtres sélectionnés.
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -704,7 +1085,10 @@ const CustomBlend = () => {
                     {/* Other Selected Ingredients */}
                     {selectedIngredients.map((ingredient, index) => (
                       <div key={`${ingredient.id}-${index}`} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                        <span className="text-sm font-medium">{ingredient.name}</span>
+                        <div>
+                          <span className="text-sm font-medium">{ingredient.name}</span>
+                          <span className="text-xs text-green-600 ml-2">({ingredient.category})</span>
+                        </div>
                         <div className="flex items-center gap-2">
                           {ingredient.price[selectedQuantity] > 0 && (
                             <span className="text-sm text-green-600">
@@ -798,19 +1182,19 @@ const CustomBlend = () => {
                       Quantité
                     </label>
                     <div className="flex items-center justify-center">
-                      <div className="flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg p-1">
+                      <div className="flex items-center bg-gradient-to-r from-gray-100 to-gray-200 backdrop-blur-sm border border-gray-300/40 rounded-2xl shadow-lg p-1">
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           onClick={() => setBlendQuantity(Math.max(1, blendQuantity - 1))}
                           disabled={blendQuantity <= 1}
-                          className="h-12 w-12 p-0 rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm hover:bg-white/80 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="h-12 w-12 p-0 rounded-xl bg-gray-200/80 backdrop-blur-sm border border-gray-300/60 shadow-sm hover:bg-gray-300/90 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Minus className="h-5 w-5 text-gray-600" />
+                          <Minus className="h-5 w-5 text-gray-700" />
                         </Button>
-                        <div className="px-6 py-3 mx-2 bg-white/80 backdrop-blur-sm rounded-xl border border-white/40 shadow-inner">
-                          <span className="text-xl font-semibold text-gray-800 min-w-[2rem] text-center block">
+                        <div className="px-6 py-3 mx-2 bg-gray-300/90 backdrop-blur-sm rounded-xl border border-gray-400/60 shadow-inner">
+                          <span className="text-xl font-semibold text-gray-900 min-w-[2rem] text-center block">
                             {blendQuantity}
                           </span>
                         </div>
@@ -819,9 +1203,9 @@ const CustomBlend = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => setBlendQuantity(blendQuantity + 1)}
-                          className="h-12 w-12 p-0 rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm hover:bg-white/80 hover:shadow-md transition-all duration-300"
+                          className="h-12 w-12 p-0 rounded-xl bg-gray-200/80 backdrop-blur-sm border border-gray-300/60 shadow-sm hover:bg-gray-300/90 hover:shadow-md transition-all duration-300"
                         >
-                          <Plus className="h-5 w-5 text-gray-600" />
+                          <Plus className="h-5 w-5 text-gray-700" />
                         </Button>
                       </div>
                     </div>

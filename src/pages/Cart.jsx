@@ -62,15 +62,21 @@ const Cart = () => {
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg">{item.name}</h3>
-                      {item.isCustom ? (
+                      <h3 className="font-semibold text-lg">
+                        {item.name}
+                        {item.isCustomBlend && <span className="text-sm text-green-600 ml-2">(mélange personnalisé)</span>}
+                      </h3>
+                      {item.isCustomBlend ? (
                         <div className="text-sm text-muted-foreground mt-1">
-                          <p>Base: {item.ingredients.find(ing => ing.type === 'base')?.name || 'N/A'}</p>
-                          <p>Ingrédients: {item.ingredients.filter(ing => ing.type !== 'base').map(ing => `${ing.name} (${ing.quantity})`).join(', ') || 'Aucun'}</p>
-                          {item.blendDescription && <p>Commentaire: {item.blendDescription}</p>}
+                          <p>Base: {item.base ? `${item.base} (base)` : 'N/A'}</p>
+                          <p>Ingrédients: {item.ingredients && item.ingredients.length > 0 
+                            ? item.ingredients.map(ing => `${ing.name} (${ing.category || 'ingrédient'})`).join(', ') 
+                            : 'Aucun'}</p>
+                          <p>Quantité: {item.weight || `${item.blendQuantity || item.quantity || 1} unité(s)`}</p>
+                          {item.description && <p>Description: {item.description}</p>}
                         </div>
                       ) : (
-                        <p className="text-muted-foreground">Prix unitaire: {item.price}€</p>
+                        <p className="text-muted-foreground">Prix unitaire: {(item.price || 0).toFixed(2)}€</p>
                       )}
                     </div>
 
@@ -79,15 +85,15 @@ const Cart = () => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-12 text-center font-medium">{item.quantity || 1}</span>
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -95,7 +101,7 @@ const Cart = () => {
 
                       <div className="text-right min-w-0">
                         <div className="font-semibold text-lg">
-                          {(item.price * item.quantity).toFixed(2)}€
+                          {((item.price || 0) * (item.quantity || 1)).toFixed(2)}€
                         </div>
                       </div>
 

@@ -70,7 +70,7 @@ const Catalog = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Notre Catalogue</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Thés et infusions</h1>
           <p className="text-lg text-muted-foreground">
             Découvrez notre sélection complète de thés et infusions artisanaux
           </p>
@@ -78,7 +78,7 @@ const Catalog = () => {
 
         {/* Filtres */}
         <div className="bg-card rounded-lg p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Recherche */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -104,29 +104,16 @@ const Catalog = () => {
               </SelectContent>
             </Select>
 
-            {/* Prix */}
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Prix" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les prix</SelectItem>
-                <SelectItem value="under-25">Moins de 25€</SelectItem>
-                <SelectItem value="25-35">25€ - 35€</SelectItem>
-                <SelectItem value="over-35">Plus de 35€</SelectItem>
-              </SelectContent>
-            </Select>
-
             {/* Tri */}
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger>
                 <SelectValue placeholder="Trier par" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="rating">Mieux notés</SelectItem>
                 <SelectItem value="name">Nom A-Z</SelectItem>
                 <SelectItem value="price-low">Prix croissant</SelectItem>
                 <SelectItem value="price-high">Prix décroissant</SelectItem>
-                <SelectItem value="rating">Mieux notés</SelectItem>
               </SelectContent>
             </Select>
           </div>
